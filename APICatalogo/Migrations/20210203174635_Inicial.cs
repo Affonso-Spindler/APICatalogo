@@ -29,7 +29,7 @@ namespace APICatalogo.Migrations
                     ProdutoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Nome = table.Column<string>(type: "varchar(80) CHARACTER SET utf8mb4", maxLength: 80, nullable: false),
-                    Descrição = table.Column<string>(type: "varchar(300) CHARACTER SET utf8mb4", maxLength: 300, nullable: false),
+                    Descricao = table.Column<string>(type: "varchar(300) CHARACTER SET utf8mb4", maxLength: 300, nullable: false),
                     Preco = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     imagemUrl = table.Column<string>(type: "varchar(300) CHARACTER SET utf8mb4", maxLength: 300, nullable: false),
                     Estoque = table.Column<float>(type: "float", nullable: false),

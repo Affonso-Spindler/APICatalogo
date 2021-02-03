@@ -17,9 +17,9 @@ namespace APICatalogo.Models
         public string Nome { get; set; }
         [Required]
         [MaxLength(300)]
-        public string Descrição { get; set; }
+        public string Descricao { get; set; }
         [Required]
-        public decimal  Preco { get; set; }
+        public decimal Preco { get; set; }
         [Required]
         [MaxLength(300)]
         public string imagemUrl { get; set; }

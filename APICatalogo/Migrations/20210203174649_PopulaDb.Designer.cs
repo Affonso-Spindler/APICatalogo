@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APICatalogo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210203165816_Inicial")]
-    partial class Inicial
+    [Migration("20210203174649_PopulaDb")]
+    partial class PopulaDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,7 +52,7 @@ namespace APICatalogo.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Descrição")
+                    b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300) CHARACTER SET utf8mb4");
