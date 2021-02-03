@@ -22,3 +22,4 @@ namespace APICatalogo.Context
         public DbSet<Produto> Produtos{ get; set; }
     }
 }
+ 
