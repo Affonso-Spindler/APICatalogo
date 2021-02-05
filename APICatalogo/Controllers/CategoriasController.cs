@@ -11,36 +11,36 @@ namespace APICatalogo.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class ProdutosController : ControllerBase
+    public class CategoriasController : ControllerBase
     {
         // <Injeção de dependencia>
         private readonly AppDbContext _context;
 
-        public ProdutosController(AppDbContext contexto)
+        public CategoriasController(AppDbContext contexto)
         {
             _context = contexto;
         }
 
         [HttpGet] //opcinal - Boa prática
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
             //AsNoTracking somente em consultas, um ganho de performance
-            return _context.Produtos.AsNoTracking().ToList();
+            return _context.Categorias.AsNoTracking().ToList();
         }
 
-        [HttpGet("{id}", Name = "ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        [HttpGet("{id}", Name = "ObterCategoria")]
+        public ActionResult<Categoria> Get(int id)
         {
-            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
-            if (produto == null)
+            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+            if (categoria == null)
             {
                 return NotFound();
             }
-            return produto;
+            return categoria;
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Produto produto)
+        public ActionResult Post([FromBody] Categoria categoria)
         {
             //desde q use a anotação [ApiController] e seja aspNet core 2.1 ou mais, a validação do modelo é feita automaticamente
 
@@ -50,23 +50,23 @@ namespace APICatalogo.Controllers
             //}
 
             //inclui o produto no contexto e SaveChange "commita" essa adição
-            _context.Produtos.Add(produto);
+            _context.Categorias.Add(categoria);
             _context.SaveChanges();
 
-            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId}, categoria);
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Produto produto)
+        public ActionResult Put(int id, [FromBody] Categoria categoria)
         {
             //Eu preciso validar se o id é o mesmo do produto informado no Body
-            if (id != produto.ProdutoId)
+            if (id != categoria.CategoriaId)
             {
                 return BadRequest();
             }
 
             //aqui eu altero o estado da Entidade, para alterado
-            _context.Entry(produto).State = EntityState.Modified;
+            _context.Entry(categoria).State = EntityState.Modified;
             //em sequida eu preciso savar salvar, "commitar"
             _context.SaveChanges();
 
@@ -74,22 +74,22 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Produto> Delete(int id)
+        public ActionResult<Categoria> Delete(int id)
         {
             //FIRSTORDEFAULT sempre vai no banco de dados
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
 
             // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
-            //var produto = _context.Produtos.Find(id);
-            
-            //Verifica se o produto existe
-            if (produto == null)
+            //var categoria = _context.Categorias.Find(id);
+
+            //Verifica se o categoria existe
+            if (categoria == null)
             {
                 return NotFound();
             }
 
-            _context.Produtos.Remove(produto);
-            return produto;
+            _context.Categorias.Remove(categoria);
+            return categoria;
         }
 
     }
