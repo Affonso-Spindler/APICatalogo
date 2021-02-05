@@ -21,7 +21,15 @@ namespace APICatalogo.Controllers
             _context = contexto;
         }
 
-        [HttpGet] //opcinal - Boa prática
+        //eu não posso ter 2 ou + métodos com a mesma anotation exemplo 2 HttpGet
+        //Para isso definimos um nome de rota que será composta com a rota padrão, nesse caso "api/[Controller]"
+        [HttpGet("produtos")]
+        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        {
+            return _context.Categorias.Include(x => x.Produtos).ToList();
+        }
+
+        [HttpGet] //opcional - Boa prática
         public ActionResult<IEnumerable<Categoria>> Get()
         {
             //AsNoTracking somente em consultas, um ganho de performance
@@ -53,7 +61,7 @@ namespace APICatalogo.Controllers
             _context.Categorias.Add(categoria);
             _context.SaveChanges();
 
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId}, categoria);
+            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
         }
 
         [HttpPut("{id}")]

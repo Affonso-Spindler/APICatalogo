@@ -28,7 +28,6 @@ C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll
-C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.csprojAssemblyReference.cache
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.GeneratedMSBuildEditorConfig.editorconfig
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.AssemblyInfoInputs.cache
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.AssemblyInfo.cs
@@ -44,3 +43,8 @@ C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\ref\APICatalogo.dll
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.pdb
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.genruntimeconfig.cache
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.csprojAssemblyReference.cache
