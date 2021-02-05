@@ -32,7 +32,7 @@ namespace APICatalogo.Controllers
             return _context.Produtos.AsNoTracking().ToList();
         }
 
-        [HttpGet("{id}", Name="ObterProduto")]
+        [HttpGet("{id}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
@@ -44,7 +44,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody]Produto produto)
+        public ActionResult Post([FromBody] Produto produto)
         {
             //desde q use a anotação [ApiController] e seja aspNet core 2.1 ou mais, a validação do modelo é feita automaticamente
 
@@ -60,6 +60,41 @@ namespace APICatalogo.Controllers
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
+        [HttpPut("{id}")]
+        public ActionResult Put(int id, [FromBody] Produto produto)
+        {
+            //Eu preciso validar se o id é o mesmo do produto informado no Body
+            if (id != produto.ProdutoId)
+            {
+                return BadRequest();
+            }
+
+            //aqui eu altero o estado da Entidade, para alterado
+            _context.Entry(produto).State = EntityState.Modified;
+            //em sequida eu preciso savar salvar, "commitar"
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<Produto> Delete(int id)
+        {
+            //FIRSTORDEFAULT sempre vai no banco de dados
+            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+
+            // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
+            //var produto = _context.Produtos.Find(id);
+            
+            //Verifica se o produto existe
+            if (produto == null)
+            {
+                return NotFound();
+            }
+
+            _context.Produtos.Remove(produto);
+            return produto;
+        }
 
     }
 }
