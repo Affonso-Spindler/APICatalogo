@@ -23,12 +23,12 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet] //opcinal - Boa prática
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
             try
             {
                 //AsNoTracking somente em consultas, um ganho de performance
-                return _context.Produtos.AsNoTracking().ToList();
+                return await _context.Produtos.AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {
@@ -39,12 +39,16 @@ namespace APICatalogo.Controllers
 
         }
 
+        //Restrição de rota
+        //:int = só aceita inteiros
+        //:min(1) = o valor mínimo do parametro é 1
+        //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public async Task<ActionResult<Produto>> Get(int id)
         {
             try
             {
-                var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
+                var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound($"O produto com id: {id} não foi encontrado");
