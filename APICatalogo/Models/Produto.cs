@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 namespace APICatalogo.Models
 {
     [Table("Produtos")]
-    public class Produto
+    public class Produto : IValidatableObject
     {
         [Key]
         public int ProdutoId { get; set; }
-        [Required(ErrorMessage ="O nome é obrigatório")]
+        [Required(ErrorMessage = "O nome é obrigatório")]
         [MaxLength(80)]
         //Utilizando a nossa Validação Customizavel
-        [PrimeiraLetraMaiuscula]
+        //[PrimeiraLetraMaiuscula]
         public string Nome { get; set; }
         [Required]
         [MaxLength(300)]
@@ -35,5 +35,31 @@ namespace APICatalogo.Models
         public Categoria Categoria { get; set; }
         public int CategoriaId { get; set; }
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            //PrimeiraLetraMaiuscula
+            if (!string.IsNullOrEmpty(this.Nome))
+            {
+                var primeiraLetra = this.Nome[0].ToString();
+                if (primeiraLetra != primeiraLetra.ToUpper())
+                {
+                    /* Retorna uma excessão
+                    o ValidationResulta inicializa uma nova instancia da Classe ValidationResult
+                    , definindo a mensagem de erro e uma lista de membros que possuem erro de validação*/
+
+                    //nameof: obtem o nome da propriedade
+                    // yield: utilizamos este retorno para retornar cada elemento individualmente 
+                    yield return new ValidationResult("A primeira letra do nome do produto deve ser maiúscula",
+                                                    new[] { nameof(this.Nome) });
+                }
+            }
+
+            //Estoque = 0
+            if (this.Estoque <= 0)
+            {
+                yield return new ValidationResult("O estoque deve ser maior que zero",
+                                                    new[] { nameof(this.Estoque) });
+            }
+        }
     }
 }
