@@ -47,23 +47,29 @@ namespace APICatalogo.Controllers
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
-        public async Task<ActionResult<Produto>> Get(int id,[BindRequired] string nome)
+        public async Task<ActionResult<Produto>> Get([FromQuery]int id)
         {
-            try
-            {
-                var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
-                if (produto == null)
-                {
-                    return NotFound($"O produto com id: {id} não foi encontrado");
-                }
-                return produto;
-            }
-            catch (Exception)
-            {
-                /* consulte https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.statuscodes?view=aspnetcore-5.0 */
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Erro ao tentar obter o produto com id: {id} do banco de dados");
-            }
+            
+            //Apenas para teste do tratamento global realizado na aula
+            throw new Exception("Exception ao retornar produto pelo id");
+            //try
+            //{
+
+
+
+            //    var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
+            //    if (produto == null)
+            //    {
+            //        return NotFound($"O produto com id: {id} não foi encontrado");
+            //    }
+            //    return produto;
+            //}
+            //catch (Exception)
+            //{
+            //    /* consulte https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.statuscodes?view=aspnetcore-5.0 */
+            //    return StatusCode(StatusCodes.Status500InternalServerError,
+            //        $"Erro ao tentar obter o produto com id: {id} do banco de dados");
+            //}
 
         }
 
