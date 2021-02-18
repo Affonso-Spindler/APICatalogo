@@ -3,6 +3,7 @@ using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,22 @@ namespace APICatalogo.Controllers
     {
         // <Injeção de dependencia>
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CategoriasController(AppDbContext contexto)
+        public CategoriasController(AppDbContext contexto, IConfiguration configuration)
         {
             _context = contexto;
+            _configuration = configuration;
         }
+
+        [HttpGet("autor")]
+        public string GetAutor()
+        {
+            var autor = _configuration["autor"];
+            var conexao = _configuration["ConnectionStrings:DefaultConnection"];
+            return $"Autor: {autor}, Conexão: {conexao}";
+        }
+
 
         //eu não posso ter 2 ou + métodos com a mesma anotation exemplo 2 HttpGet
         //Para isso definimos um nome de rota que será composta com a rota padrão, nesse caso "api/[Controller]"
