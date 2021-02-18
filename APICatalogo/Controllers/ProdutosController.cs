@@ -2,6 +2,7 @@
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -43,8 +44,8 @@ namespace APICatalogo.Controllers
         //:int = só aceita inteiros
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        [HttpGet("{id}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> Get(int id)
+        [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
+        public async Task<ActionResult<Produto>> Get(int id,[BindRequired] string nome)
         {
             try
             {

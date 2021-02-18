@@ -1,4 +1,5 @@
-﻿using System;
+﻿using APICatalogo.Validations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,8 +13,10 @@ namespace APICatalogo.Models
     {
         [Key]
         public int ProdutoId { get; set; }
-        [Required]
+        [Required(ErrorMessage ="O nome é obrigatório")]
         [MaxLength(80)]
+        //Utilizando a nossa Validação Customizavel
+        [PrimeiraLetraMaiuscula]
         public string Nome { get; set; }
         [Required]
         [MaxLength(300)]
