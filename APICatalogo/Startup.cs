@@ -1,6 +1,7 @@
 using APICatalogo.Context;
 using APICatalogo.Extensions;
 using APICatalogo.Filters;
+using APICatalogo.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,8 @@ namespace APICatalogo
         {
             services.AddScoped<ApiLoggingFilter>();
             string mySqlConnection = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddDbContext<AppDbContext>(options =>
                                             options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
