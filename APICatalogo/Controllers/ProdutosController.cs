@@ -1,14 +1,10 @@
-﻿using APICatalogo.Context;
-using APICatalogo.Filters;
-using APICatalogo.Models;
+﻿using APICatalogo.Models;
+using APICatalogo.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
@@ -17,21 +13,27 @@ namespace APICatalogo.Controllers
     public class ProdutosController : ControllerBase
     {
         // <Injeção de dependencia>
-        private readonly AppDbContext _context;
+        //private readonly AppDbContext _context;
+        private readonly IUnitOfWork _uof;
 
-        public ProdutosController(AppDbContext contexto)
+        public ProdutosController(IUnitOfWork contexto)
         {
-            _context = contexto;
+            _uof = contexto;
         }
 
-        [HttpGet] //opcinal - Boa prática
-        [ServiceFilter(typeof(ApiLoggingFilter))]
-        public async Task<ActionResult<IEnumerable<Produto>>> Get()
+        [HttpGet("menorpreco")]
+        public ActionResult<IEnumerable<Produto>> GetProdutosPrecos()
+        {
+            return _uof.ProdutoRepository.GetProdutosPorPreco().ToList();
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Produto>> Get()
         {
             try
             {
                 //AsNoTracking somente em consultas, um ganho de performance
-                return await _context.Produtos.AsNoTracking().ToListAsync();
+                return _uof.ProdutoRepository.Get().ToList();
             }
             catch (Exception)
             {
@@ -47,29 +49,25 @@ namespace APICatalogo.Controllers
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
-        public async Task<ActionResult<Produto>> Get([FromQuery]int id)
+        public ActionResult<Produto> Get([FromQuery] int id)
         {
-            
             //Apenas para teste do tratamento global realizado na aula
-            throw new Exception("Exception ao retornar produto pelo id");
-            //try
-            //{
-
-
-
-            //    var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
-            //    if (produto == null)
-            //    {
-            //        return NotFound($"O produto com id: {id} não foi encontrado");
-            //    }
-            //    return produto;
-            //}
-            //catch (Exception)
-            //{
-            //    /* consulte https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.statuscodes?view=aspnetcore-5.0 */
-            //    return StatusCode(StatusCodes.Status500InternalServerError,
-            //        $"Erro ao tentar obter o produto com id: {id} do banco de dados");
-            //}
+            //throw new Exception("Exception ao retornar produto pelo id");
+            try
+            {
+                var produto = _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
+                if (produto == null)
+                {
+                    return NotFound($"O produto com id: {id} não foi encontrado");
+                }
+                return produto;
+            }
+            catch (Exception)
+            {
+                /* consulte https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.statuscodes?view=aspnetcore-5.0 */
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Erro ao tentar obter o produto com id: {id} do banco de dados");
+            }
 
         }
 
@@ -86,8 +84,8 @@ namespace APICatalogo.Controllers
                 //}
 
                 //inclui o produto no contexto e SaveChange "commita" essa adição
-                _context.Produtos.Add(produto);
-                _context.SaveChanges();
+                _uof.ProdutoRepository.Add(produto);
+                _uof.Commit();
 
                 return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
             }
@@ -111,9 +109,9 @@ namespace APICatalogo.Controllers
                 }
 
                 //aqui eu altero o estado da Entidade, para alterado
-                _context.Entry(produto).State = EntityState.Modified;
+                _uof.ProdutoRepository.Update(produto);
                 //em sequida eu preciso savar salvar, "commitar"
-                _context.SaveChanges();
+                _uof.Commit();
 
                 return Ok();
             }
@@ -131,10 +129,10 @@ namespace APICatalogo.Controllers
             try
             {
                 //FIRSTORDEFAULT sempre vai no banco de dados
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+                var produto = _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
                 // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
-                //var produto = _context.Produtos.Find(id);
+                //var produto = _uof.Produtos.Find(id);
 
                 //Verifica se o produto existe
                 if (produto == null)
@@ -142,7 +140,8 @@ namespace APICatalogo.Controllers
                     return NotFound($"O produto com id: {id} não foi encontrado");
                 }
 
-                _context.Produtos.Remove(produto);
+                _uof.ProdutoRepository.Delete(produto);
+                _uof.Commit();
                 return produto;
             }
             catch (Exception)
