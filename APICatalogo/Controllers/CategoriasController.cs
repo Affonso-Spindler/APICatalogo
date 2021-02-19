@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using APICatalogo.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,12 @@ namespace APICatalogo.Controllers
     public class CategoriasController : ControllerBase
     {
         // <Injeção de dependencia>
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _uof;
         private readonly IConfiguration _configuration;
 
-        public CategoriasController(AppDbContext contexto, IConfiguration configuration)
+        public CategoriasController(IUnitOfWork contexto, IConfiguration configuration)
         {
-            _context = contexto;
+            _uof = contexto;
             _configuration = configuration;
         }
 
@@ -41,7 +42,7 @@ namespace APICatalogo.Controllers
         {
             try
             {
-                return _context.Categorias.Include(x => x.Produtos).ToList();
+                return _uof.CategoriaRepository.GetCategoriasProdutos().ToList();
             }
             catch (Exception)
             {
@@ -51,13 +52,13 @@ namespace APICatalogo.Controllers
             }
         }
 
-        [HttpGet] //opcional - Boa prática
+        [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
             {
                 //AsNoTracking somente em consultas, um ganho de performance
-                return _context.Categorias.AsNoTracking().ToList();
+                return _uof.CategoriaRepository.Get().ToList();
             }
             catch (Exception)
             {
@@ -72,7 +73,7 @@ namespace APICatalogo.Controllers
         {
             try
             {
-                var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"A categoria com id: {id} não foi encontrada");
@@ -101,8 +102,8 @@ namespace APICatalogo.Controllers
                 //}
 
                 //inclui o produto no contexto e SaveChange "commita" essa adição
-                _context.Categorias.Add(categoria);
-                _context.SaveChanges();
+                _uof.CategoriaRepository.Add(categoria);
+                _uof.Commit();
 
                 return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
             }
@@ -126,9 +127,9 @@ namespace APICatalogo.Controllers
                 }
 
                 //aqui eu altero o estado da Entidade, para alterado
-                _context.Entry(categoria).State = EntityState.Modified;
+                _uof.CategoriaRepository.Update(categoria);
                 //em sequida eu preciso savar salvar, "commitar"
-                _context.SaveChanges();
+                _uof.Commit();
 
                 return Ok($"Categoria com id: {id} foi atualizada com sucesso");
             }
@@ -146,10 +147,10 @@ namespace APICatalogo.Controllers
             try
             {
                 //FIRSTORDEFAULT sempre vai no banco de dados
-                var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
                 // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
-                //var categoria = _context.Categorias.Find(id);
+                //var categoria = _uof.Categorias.Find(id);
 
                 //Verifica se o categoria existe
                 if (categoria == null)
@@ -157,7 +158,8 @@ namespace APICatalogo.Controllers
                     return NotFound($"A categoria com id: {id} não foi encontrada");
                 }
 
-                _context.Categorias.Remove(categoria);
+                _uof.CategoriaRepository.Delete(categoria);
+                _uof.Commit();
                 return categoria;
             }
             catch (Exception)
