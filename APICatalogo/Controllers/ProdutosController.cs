@@ -1,5 +1,7 @@
-﻿using APICatalogo.Models;
+﻿using APICatalogo.DTOs;
+using APICatalogo.Models;
 using APICatalogo.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,25 +17,35 @@ namespace APICatalogo.Controllers
         // <Injeção de dependencia>
         //private readonly AppDbContext _context;
         private readonly IUnitOfWork _uof;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(IUnitOfWork contexto)
+        public ProdutosController(IUnitOfWork contexto, IMapper mapper)
         {
             _uof = contexto;
+            _mapper = mapper;
         }
 
         [HttpGet("menorpreco")]
-        public ActionResult<IEnumerable<Produto>> GetProdutosPrecos()
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosPrecos()
         {
-            return _uof.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtos = _uof.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
+
+            return produtosDTO;
+
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get()
         {
             try
             {
+                var produto = _uof.ProdutoRepository.Get().ToList();
+
+                var produtoDTO = _mapper.Map<List<ProdutoDTO>>(produto);
+
                 //AsNoTracking somente em consultas, um ganho de performance
-                return _uof.ProdutoRepository.Get().ToList();
+                return produtoDTO;
             }
             catch (Exception)
             {
@@ -49,7 +61,7 @@ namespace APICatalogo.Controllers
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
-        public ActionResult<Produto> Get([FromQuery] int id)
+        public ActionResult<ProdutoDTO> Get([FromQuery] int id)
         {
             //Apenas para teste do tratamento global realizado na aula
             //throw new Exception("Exception ao retornar produto pelo id");
@@ -60,7 +72,8 @@ namespace APICatalogo.Controllers
                 {
                     return NotFound($"O produto com id: {id} não foi encontrado");
                 }
-                return produto;
+                var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+                return produtoDTO;
             }
             catch (Exception)
             {
@@ -72,7 +85,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Produto produto)
+        public ActionResult Post([FromBody] ProdutoDTO produtoDto)
         {
             try
             {
@@ -82,12 +95,15 @@ namespace APICatalogo.Controllers
                 //{
                 //    return BadRequest(ModelState);
                 //}
+                var produto = _mapper.Map<Produto>(produtoDto);
 
                 //inclui o produto no contexto e SaveChange "commita" essa adição
                 _uof.ProdutoRepository.Add(produto);
                 _uof.Commit();
 
-                return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+                var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+
+                return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produtoDTO);
             }
             catch (Exception)
             {
@@ -98,16 +114,17 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Produto produto)
+        public ActionResult Put(int id, [FromBody] ProdutoDTO produtoDto)
         {
             try
             {
                 //Eu preciso validar se o id é o mesmo do produto informado no Body
-                if (id != produto.ProdutoId)
+                if (id != produtoDto.ProdutoId)
                 {
                     return BadRequest($"Não foi possível atualizar o produto com id: {id}");
                 }
 
+                var produto = _mapper.Map<Produto>(produtoDto);
                 //aqui eu altero o estado da Entidade, para alterado
                 _uof.ProdutoRepository.Update(produto);
                 //em sequida eu preciso savar salvar, "commitar"
@@ -124,7 +141,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Produto> Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
             try
             {
@@ -142,7 +159,10 @@ namespace APICatalogo.Controllers
 
                 _uof.ProdutoRepository.Delete(produto);
                 _uof.Commit();
-                return produto;
+
+                var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+
+                return produtoDTO;
             }
             catch (Exception)
             {
