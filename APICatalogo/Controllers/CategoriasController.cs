@@ -1,6 +1,8 @@
 ﻿using APICatalogo.Context;
+using APICatalogo.DTOs;
 using APICatalogo.Models;
 using APICatalogo.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +21,13 @@ namespace APICatalogo.Controllers
         // <Injeção de dependencia>
         private readonly IUnitOfWork _uof;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public CategoriasController(IUnitOfWork contexto, IConfiguration configuration)
+        public CategoriasController(IUnitOfWork contexto, IConfiguration configuration, IMapper mapper)
         {
             _uof = contexto;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         [HttpGet("autor")]
@@ -38,11 +42,14 @@ namespace APICatalogo.Controllers
         //eu não posso ter 2 ou + métodos com a mesma anotation exemplo 2 HttpGet
         //Para isso definimos um nome de rota que será composta com a rota padrão, nesse caso "api/[Controller]"
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
         {
             try
             {
-                return _uof.CategoriaRepository.GetCategoriasProdutos().ToList();
+                var categoria = _uof.CategoriaRepository.GetCategoriasProdutos().ToList();
+                var categoriaDTO = _mapper.Map<List<CategoriaDTO>>(categoria);
+                
+                return categoriaDTO;
             }
             catch (Exception)
             {
@@ -53,12 +60,15 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
             try
             {
                 //AsNoTracking somente em consultas, um ganho de performance
-                return _uof.CategoriaRepository.Get().ToList();
+                var categoria = _uof.CategoriaRepository.Get().ToList();
+                var categoriaDTO = _mapper.Map<List<CategoriaDTO>>(categoria);
+                
+                return categoriaDTO;
             }
             catch (Exception)
             {
@@ -69,7 +79,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> Get(int id)
+        public ActionResult<CategoriaDTO> Get(int id)
         {
             try
             {
@@ -78,7 +88,10 @@ namespace APICatalogo.Controllers
                 {
                     return NotFound($"A categoria com id: {id} não foi encontrada");
                 }
-                return categoria;
+
+                var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+             
+                return categoriaDTO;
             }
             catch (Exception)
             {
@@ -90,7 +103,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Categoria categoria)
+        public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
@@ -102,10 +115,13 @@ namespace APICatalogo.Controllers
                 //}
 
                 //inclui o produto no contexto e SaveChange "commita" essa adição
+                var categoria = _mapper.Map<Categoria>(categoriaDto);
                 _uof.CategoriaRepository.Add(categoria);
                 _uof.Commit();
 
-                return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
+                var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+
+                return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoriaDTO);
             }
             catch (Exception)
             {
@@ -116,15 +132,17 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Categoria categoria)
+        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
                 //Eu preciso validar se o id é o mesmo do produto informado no Body
-                if (id != categoria.CategoriaId)
+                if (id != categoriaDto.CategoriaId)
                 {
                     return BadRequest($"Não foi possível atualizar a categoria com id: {id}");
                 }
+
+                var categoria = _mapper.Map<Categoria>(categoriaDto);
 
                 //aqui eu altero o estado da Entidade, para alterado
                 _uof.CategoriaRepository.Update(categoria);
@@ -142,7 +160,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Categoria> Delete(int id)
+        public ActionResult<CategoriaDTO> Delete(int id)
         {
             try
             {
@@ -160,7 +178,10 @@ namespace APICatalogo.Controllers
 
                 _uof.CategoriaRepository.Delete(categoria);
                 _uof.Commit();
-                return categoria;
+
+                var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+
+                return categoriaDTO;
             }
             catch (Exception)
             {
