@@ -1,9 +1,11 @@
 ﻿using APICatalogo.DTOs;
 using APICatalogo.Models;
+using APICatalogo.Pagination;
 using APICatalogo.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,13 +38,26 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
             try
             {
-                var produto = _uof.ProdutoRepository.Get().ToList();
+                var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
 
-                var produtoDTO = _mapper.Map<List<ProdutoDTO>>(produto);
+
+                var metadata = new
+                {
+                    produtos.TotalCount,
+                    produtos.PageSize,
+                    produtos.CurrentPage,
+                    produtos.TotalPages,
+                    produtos.HasNext,
+                    produtos.HasPrevious
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                var produtoDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
 
                 //AsNoTracking somente em consultas, um ganho de performance
                 return produtoDTO;
