@@ -48,3 +48,5 @@ C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Newtonsoft.Json.dll
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
 C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\obj\Debug\net5.0\APICatalogo.csprojAssemblyReference.cache
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\AutoMapper.dll
+C:\_CURSOS\Web API ASP .NET Core Essencial\_curso_webapi\APICatalogo\APICatalogo\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
