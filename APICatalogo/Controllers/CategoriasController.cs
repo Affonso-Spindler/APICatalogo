@@ -44,11 +44,11 @@ namespace APICatalogo.Controllers
         //eu não posso ter 2 ou + métodos com a mesma anotation exemplo 2 HttpGet
         //Para isso definimos um nome de rota que será composta com a rota padrão, nesse caso "api/[Controller]"
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetCategoriasProdutos().ToList();
+                var categoria = await _uof.CategoriaRepository.GetCategoriasProdutos();
                 var categoriaDTO = _mapper.Map<List<CategoriaDTO>>(categoria);
                 
                 return categoriaDTO;
@@ -61,13 +61,14 @@ namespace APICatalogo.Controllers
             }
         }
 
+
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get([FromQuery] CategoriasParameters categoriasParameters)
         {
             try
             {
                 //AsNoTracking somente em consultas, um ganho de performance
-                var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+                var categorias = await _uof.CategoriaRepository.GetCategorias(categoriasParameters);
 
                 var metadata = new
                 {
@@ -93,12 +94,13 @@ namespace APICatalogo.Controllers
             }
         }
 
+
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"A categoria com id: {id} não foi encontrada");
@@ -117,8 +119,9 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpPost]
-        public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Post([FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
@@ -132,7 +135,7 @@ namespace APICatalogo.Controllers
                 //inclui o produto no contexto e SaveChange "commita" essa adição
                 var categoria = _mapper.Map<Categoria>(categoriaDto);
                 _uof.CategoriaRepository.Add(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -146,8 +149,9 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDto)
+        public async Task<ActionResult> Put(int id, [FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
@@ -162,7 +166,7 @@ namespace APICatalogo.Controllers
                 //aqui eu altero o estado da Entidade, para alterado
                 _uof.CategoriaRepository.Update(categoria);
                 //em sequida eu preciso savar salvar, "commitar"
-                _uof.Commit();
+                await _uof.Commit();
 
                 return Ok($"Categoria com id: {id} foi atualizada com sucesso");
             }
@@ -174,13 +178,14 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpDelete("{id}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
             try
             {
                 //FIRSTORDEFAULT sempre vai no banco de dados
-                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
                 // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
                 //var categoria = _uof.Categorias.Find(id);
@@ -192,7 +197,7 @@ namespace APICatalogo.Controllers
                 }
 
                 _uof.CategoriaRepository.Delete(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 

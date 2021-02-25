@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
@@ -28,21 +28,22 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("menorpreco")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosPrecos()
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosPrecos()
         {
-            var produtos = _uof.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtos = await _uof.ProdutoRepository.GetProdutosPorPreco();
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
 
             return produtosDTO;
 
         }
 
+
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
             try
             {
-                var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+                var produtos = await _uof.ProdutoRepository.GetProdutos(produtosParameters);
 
 
                 var metadata = new
@@ -71,18 +72,19 @@ namespace APICatalogo.Controllers
 
         }
 
+
         //Restrição de rota
         //:int = só aceita inteiros
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
-        public ActionResult<ProdutoDTO> Get([FromQuery] int id)
+        public async Task<ActionResult<ProdutoDTO>> Get([FromQuery] int id)
         {
             //Apenas para teste do tratamento global realizado na aula
             //throw new Exception("Exception ao retornar produto pelo id");
             try
             {
-                var produto = _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
+                var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound($"O produto com id: {id} não foi encontrado");
@@ -99,8 +101,9 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpPost]
-        public ActionResult Post([FromBody] ProdutoDTO produtoDto)
+        public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {
             try
             {
@@ -114,7 +117,7 @@ namespace APICatalogo.Controllers
 
                 //inclui o produto no contexto e SaveChange "commita" essa adição
                 _uof.ProdutoRepository.Add(produto);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
@@ -128,8 +131,9 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ProdutoDTO produtoDto)
+        public async Task<ActionResult> Put(int id, [FromBody] ProdutoDTO produtoDto)
         {
             try
             {
@@ -143,7 +147,7 @@ namespace APICatalogo.Controllers
                 //aqui eu altero o estado da Entidade, para alterado
                 _uof.ProdutoRepository.Update(produto);
                 //em sequida eu preciso savar salvar, "commitar"
-                _uof.Commit();
+                await _uof.Commit();
 
                 return Ok();
             }
@@ -155,13 +159,14 @@ namespace APICatalogo.Controllers
 
         }
 
+
         [HttpDelete("{id}")]
-        public ActionResult<ProdutoDTO> Delete(int id)
+        public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
             try
             {
                 //FIRSTORDEFAULT sempre vai no banco de dados
-                var produto = _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
+                var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
                 // o find primeiro busca na memória, se ele acha não vai no banco de dados, mas só serve se o ID for chave primária da tabela
                 //var produto = _uof.Produtos.Find(id);
@@ -173,7 +178,7 @@ namespace APICatalogo.Controllers
                 }
 
                 _uof.ProdutoRepository.Delete(produto);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
