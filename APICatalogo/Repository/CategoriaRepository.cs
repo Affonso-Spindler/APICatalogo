@@ -4,6 +4,7 @@ using APICatalogo.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Repository
 {
@@ -14,7 +15,7 @@ namespace APICatalogo.Repository
 
         }
 
-        public PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParameters)
+        public async Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParameters)
         {
 
             //return Get()
@@ -23,15 +24,16 @@ namespace APICatalogo.Repository
             //    .Take(produtosParameters.PageSize)
             //    .ToList();
 
-            return PagedList<Categoria>.ToPagedList(Get().OrderBy(on => on.Nome),
+            return await PagedList<Categoria>.ToPagedList(Get().OrderBy(on => on.Nome),
                             categoriasParameters.PageNumber,
                             categoriasParameters.PageSize);
 
 
         }
-            public IEnumerable<Categoria> GetCategoriasProdutos()
+
+        public async Task<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return Get().Include(x => x.Produtos);
+            return await Get().Include(x => x.Produtos).ToListAsync();
         }
     }
 }
