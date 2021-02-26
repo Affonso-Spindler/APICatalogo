@@ -38,7 +38,7 @@ namespace APICatalogo
         public void ConfigureServices(IServiceCollection services)
         {
             //via middleware
-            services.AddCors();
+            //services.AddCors();
 
             //via atributo
             //permite apenas o uso do método GET
