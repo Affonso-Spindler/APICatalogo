@@ -18,8 +18,10 @@ using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
+    //define o padrão de retorno no swwager
+    [Produces("application/json")]
     [EnableCors("PermitirApiRequest")]
-    //[Authorize(AuthenticationSchemes ="Bearer")]
+    [Authorize(AuthenticationSchemes ="Bearer")]
     [Route("api/[Controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
@@ -98,7 +100,11 @@ namespace APICatalogo.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Obtem uma categoria pelo seu Id
+        /// </summary>
+        /// <param name="id">Código da Categoria</param>
+        /// <returns>Objetos Categoria</returns>
         [HttpGet("{id}", Name = "ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
@@ -123,7 +129,21 @@ namespace APICatalogo.Controllers
 
         }
 
-
+        /// <summary>
+        /// Inclui uma nova categoria
+        /// </summary>
+        /// <remarks>
+        /// Exemplo de request:
+        ///     Post api/categorias
+        ///     {
+        ///         "categoriaId": 1,
+        ///         "nome": "categoria1",
+        ///         "imagemUrl": "https://teste.net/1.jpg"
+        ///     }
+        /// </remarks>
+        /// <param name="categoriaDto">Objeto Categoria</param>
+        /// <returns>O objeto Categoria incluída</returns>
+        /// <remarks>Retorna um objeto Categoria</remarks>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CategoriaDTO categoriaDto)
         {

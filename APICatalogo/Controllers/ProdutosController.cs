@@ -12,8 +12,12 @@ using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
+    //define o padrão de retorno no swwager
+    [Produces("application/json")]
     [Route("api/[Controller]")]
     [ApiController]
+    //faz com que aplique o conjunto padrão de convensões ao controlador, e não a cada Action
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class ProdutosController : ControllerBase
     {
         // <Injeção de dependencia>
@@ -78,6 +82,9 @@ namespace APICatalogo.Controllers
         //:min(1) = o valor mínimo do parametro é 1
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         [HttpGet("{id}", Name = "ObterProduto")]        //BindRequired torna o parametro obrigatório, Temos que informar na Url ->  .../produtos/1?nome=Suco
+        //Permite definir explicitamente os tipos de retorno adequado, auxiliando o swashbuckle e refletindo na documentação
+        [ProducesResponseType(typeof(ProdutoDTO),StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProdutoDTO>> Get([FromQuery] int id)
         {
             //Apenas para teste do tratamento global realizado na aula
@@ -102,6 +109,9 @@ namespace APICatalogo.Controllers
         }
 
 
+        //Permite definir explicitamente os tipos de retorno adequado, auxiliando o swashbuckle e refletindo na documentação
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {
@@ -133,6 +143,8 @@ namespace APICatalogo.Controllers
 
 
         [HttpPut("{id}")]
+        //isso faz com que eu não preciso informar cada tipo de retorno do método
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         public async Task<ActionResult> Put(int id, [FromBody] ProdutoDTO produtoDto)
         {
             try

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>APICatalogo</name>
+    </assembly>
+    <members>
+        <member name="M:APICatalogo.Controllers.AutorizaController.RegisterUser(APICatalogo.DTOs.UsuarioDTO)">
+            <summary>
+            Registra um novo usuário
+            </summary>
+            <param name="model">Um objeto UsuarioDTO</param>
+            <returns>Status 200 e o token para o cliente</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.AutorizaController.Login(APICatalogo.DTOs.UsuarioDTO)">
+            <summary>
+            Verifica as credenciais de um usuário
+            </summary>
+            <param name="userInfo">Um objeto do tipo UsuarioDTO</param>
+            <returns>Status 200 e o token para o cliente</returns>
+            <remarks>Retorna status 200 e o token para novo</remarks>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Get(System.Int32)">
+            <summary>
+            Obtem uma categoria pelo seu Id
+            </summary>
+            <param name="id">Código da Categoria</param>
+            <returns>Objetos Categoria</returns>
+        </member>
+        <member name="M:APICatalogo.Controllers.CategoriasController.Post(APICatalogo.DTOs.CategoriaDTO)">
+            <summary>
+            Inclui uma nova categoria
+            </summary>
+            <remarks>
+            Exemplo de request:
+                Post api/categorias
+                {
+                    "categoriaId": 1,
+                    "nome": "categoria1",
+                    "imagemUrl": "https://teste.net/1.jpg"
+                }
+            </remarks>
+            <param name="categoriaDto">Objeto Categoria</param>
+            <returns>O objeto Categoria incluída</returns>
+            <remarks>Retorna um objeto Categoria</remarks>
+        </member>
+    </members>
+</doc>
