@@ -85,7 +85,7 @@ namespace APICatalogo.Controllers
         //Permite definir explicitamente os tipos de retorno adequado, auxiliando o swashbuckle e refletindo na documentação
         [ProducesResponseType(typeof(ProdutoDTO),StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProdutoDTO>> Get([FromQuery] int id)
+        public async Task<ActionResult<ProdutoDTO>> Get( int id)
         {
             //Apenas para teste do tratamento global realizado na aula
             //throw new Exception("Exception ao retornar produto pelo id");
